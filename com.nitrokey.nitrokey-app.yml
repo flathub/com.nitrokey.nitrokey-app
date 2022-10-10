@@ -1,8 +1,10 @@
 app-id: com.nitrokey.nitrokey-app
 runtime: org.kde.Platform
-runtime-version: '5.15'
+runtime-version: '5.15-22.08'
 sdk: org.kde.Sdk
 command: nitrokey-app
+rename-desktop-file: nitrokey-app.desktop
+rename-icon: nitrokey-app
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -11,64 +13,50 @@ finish-args:
 cleanup:
   - "*.a"
   - "/include"
-  - "/lib/debug"
+  - /lib/cmake
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - /share/doc
+  - /share/Catch2
   - "*.md"
   - "*.txt"
 modules:
-  - name: libusb
-    sources:
-      - type: archive
-        url: https://github.com/libusb/libusb/archive/v1.0.24.tar.gz
-        sha256: b7724c272dfc5713dce88ff717efd60f021ca5b7c8e30f08ebb2c42d2eea08ae
+  - shared-modules/libusb/libusb.json
   - name: hidapi
+    buildsystem: cmake-ninja
     sources:
     - type: archive
-      url: https://github.com/libusb/hidapi/archive/hidapi-0.10.1.tar.gz
-      sha256: f71dd8a1f46979c17ee521bc2117573872bbf040f8a4750e492271fc141f2644
+      url: https://github.com/libusb/hidapi/archive/hidapi-0.12.0.tar.gz
+      sha256: 28ec1451f0527ad40c1a4c92547966ffef96813528c8b184a665f03ecbb508bc
   - name: libnitrokey
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     sources:
     - type: archive
       url: https://github.com/Nitrokey/libnitrokey/archive/v3.6.tar.gz
       sha256: 89bc89ef14597186b57d82ebf696e9318528dad2a748704145d9e3320084dde7
   - name: Catch2
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     builddir: true
     sources: 
     - type: archive
-      url: https://github.com/catchorg/Catch2/archive/v2.13.4.tar.gz
-      sha256: e7eb70b3d0ac2ed7dcf14563ad808740c29e628edde99e973adad373a2b5e4df
+      url: https://github.com/catchorg/Catch2/archive/v2.13.9.tar.gz
+      sha256: 06dbc7620e3b96c2b69d57bf337028bf245a211b3cddb843835bfe258f427a52
   - name: cppcodec
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     sources:
     - type: archive
       url: https://github.com/tplgy/cppcodec/archive/v0.2.tar.gz
       sha256: 0edaea2a9d9709d456aa99a1c3e17812ed130f9ef2b5c2d152c230a5cbc5c482
   - name: nitrokey-app
-    buildsystem: cmake
+    buildsystem: cmake-ninja
+    post-install:
+      - install -Dm644 nitrokey-app-64x64.png /app/share/icons/hicolor/64x64/apps/nitrokey-app.png
     sources:
       - type: archive
         url: https://github.com/Nitrokey/nitrokey-app/releases/download/v1.4.2/nitrokey-app-v1.4.2.tar.gz
         sha256: 965c05409c0fb534b8092eb66a54bafd4cb1a2e50f15cf197f6527ae14747634
-  - name: nitrokey-flathub
-    buildsystem: simple
-    build-commands:
-      - "mkdir -p /app/share/icons/hicolor/64x64/apps"
-      - "mkdir -p /app/share/icons/hicolor/128x128/apps"
-      - "mkdir -p /app/share/icons/hicolor/scalable/apps"
-      - "mv /app/share/icons/hicolor/128x128/apps/nitrokey-app.png /app/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png"
-      - "mv nitrokey-app-64x64.png /app/share/icons/hicolor/64x64/apps/${FLATPAK_ID}.png"
-      - "mv /app/share/icons/hicolor/scalable/apps/nitrokey-app.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg"
-      - "mkdir -p /app/share/app-info/icons/flatpak/{scalable,128x128,64x64}/"
-      - "cp /app/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png /app/share/app-info/icons/flatpak/128x128/"
-      - "cp /app/share/icons/hicolor/64x64/apps/${FLATPAK_ID}.png /app/share/app-info/icons/flatpak/64x64/"
-      - "cp /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg /app/share/app-info/icons/flatpak/scalable/"
-      - "mv /app/share/applications/nitrokey-app.desktop /app/share/applications/${FLATPAK_ID}.desktop"
-      - "desktop-file-edit --set-icon=${FLATPAK_ID} /app/share/applications/${FLATPAK_ID}.desktop"
-      - "mv ${FLATPAK_ID}.appdata.xml /app/share/metainfo/${FLATPAK_ID}.appdata.xml"
-    sources:
-      - type: file
-        path: com.nitrokey.nitrokey-app.appdata.xml
+      - type: patch
+        path: appdata.patch
       - type: file
         path: nitrokey-app-64x64.png
 
