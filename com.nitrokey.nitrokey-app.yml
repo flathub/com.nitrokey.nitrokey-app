@@ -1,6 +1,6 @@
 app-id: com.nitrokey.nitrokey-app
 runtime: org.kde.Platform
-runtime-version: '5.15-22.08'
+runtime-version: '5.15-24.08'
 sdk: org.kde.Sdk
 command: nitrokey-app
 rename-desktop-file: nitrokey-app.desktop
@@ -11,13 +11,13 @@ finish-args:
   - --filesystem=host
   - --device=all
 cleanup:
-  - "*.a"
-  - "/include"
+  - /include
   - /lib/cmake
   - /lib/pkgconfig
   - /share/pkgconfig
   - /share/doc
   - /share/Catch2
+  - "*.a"
   - "*.md"
   - "*.txt"
 modules:
