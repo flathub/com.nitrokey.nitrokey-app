@@ -10,15 +10,14 @@ finish-args:
   - --filesystem=host
   - --device=all
 cleanup:
+  - /etc
   - /include
   - /lib/cmake
   - /lib/pkgconfig
-  - /share/pkgconfig
-  - /share/doc
   - /share/Catch2
-  - "*.a"
-  - "*.md"
-  - "*.txt"
+  - /share/doc
+  - /share/pkgconfig
+  - /share/pixmaps
 modules:
   - name: hidapi
     buildsystem: cmake-ninja
