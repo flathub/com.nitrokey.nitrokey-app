@@ -4,7 +4,6 @@ runtime-version: '5.15-24.08'
 sdk: org.kde.Sdk
 command: nitrokey-app
 rename-desktop-file: nitrokey-app.desktop
-rename-icon: nitrokey-app
 finish-args:
   - --share=ipc
   - --socket=x11
@@ -50,7 +49,8 @@ modules:
   - name: nitrokey-app
     buildsystem: cmake-ninja
     post-install:
-      - install -Dm644 nitrokey-app-64x64.png /app/share/icons/hicolor/64x64/apps/nitrokey-app.png
+      - install -Dm644 images/icon/nitrokey-app-icon-vector.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - desktop-file-edit --set-icon=${FLATPAK_ID} /app/share/applications/nitrokey-app.desktop
     sources:
       - type: archive
         url: https://github.com/Nitrokey/nitrokey-app/releases/download/v1.4.2/nitrokey-app-v1.4.2.tar.gz
@@ -58,5 +58,4 @@ modules:
       - type: patch
         path: appdata.patch
       - type: file
-        path: nitrokey-app-64x64.png
 
