@@ -20,7 +20,6 @@ cleanup:
   - "*.md"
   - "*.txt"
 modules:
-  - shared-modules/libusb/libusb.json
   - name: hidapi
     buildsystem: cmake-ninja
     sources:
