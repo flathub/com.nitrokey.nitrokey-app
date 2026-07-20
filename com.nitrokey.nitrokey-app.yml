@@ -1,35 +1,36 @@
 app-id: com.nitrokey.nitrokey-app
 runtime: org.kde.Platform
-runtime-version: '5.15-24.08'
+runtime-version: '5.15-25.08'
 sdk: org.kde.Sdk
 command: nitrokey-app
 rename-desktop-file: nitrokey-app.desktop
-rename-icon: nitrokey-app
 finish-args:
   - --share=ipc
   - --socket=x11
   - --filesystem=host
   - --device=all
 cleanup:
+  - /etc
   - /include
   - /lib/cmake
   - /lib/pkgconfig
-  - /share/pkgconfig
-  - /share/doc
   - /share/Catch2
-  - "*.a"
-  - "*.md"
-  - "*.txt"
+  - /share/doc
+  - /share/pkgconfig
+  - /share/pixmaps
 modules:
-  - shared-modules/libusb/libusb.json
   - name: hidapi
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     sources:
     - type: archive
       url: https://github.com/libusb/hidapi/archive/hidapi-0.12.0.tar.gz
       sha256: 28ec1451f0527ad40c1a4c92547966ffef96813528c8b184a665f03ecbb508bc
   - name: libnitrokey
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     sources:
     - type: archive
       url: https://github.com/Nitrokey/libnitrokey/archive/v3.6.tar.gz
@@ -37,26 +38,31 @@ modules:
   - name: Catch2
     buildsystem: cmake-ninja
     builddir: true
-    sources: 
+    sources:
     - type: archive
       url: https://github.com/catchorg/Catch2/archive/v2.13.9.tar.gz
       sha256: 06dbc7620e3b96c2b69d57bf337028bf245a211b3cddb843835bfe258f427a52
   - name: cppcodec
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     sources:
     - type: archive
       url: https://github.com/tplgy/cppcodec/archive/v0.2.tar.gz
       sha256: 0edaea2a9d9709d456aa99a1c3e17812ed130f9ef2b5c2d152c230a5cbc5c482
   - name: nitrokey-app
     buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_POLICY_VERSION_MINIMUM=3.5
     post-install:
-      - install -Dm644 nitrokey-app-64x64.png /app/share/icons/hicolor/64x64/apps/nitrokey-app.png
+      - install -Dm644 images/icon/nitrokey-app-icon-vector.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - desktop-file-edit --set-icon=${FLATPAK_ID} /app/share/applications/nitrokey-app.desktop
     sources:
       - type: archive
         url: https://github.com/Nitrokey/nitrokey-app/releases/download/v1.4.2/nitrokey-app-v1.4.2.tar.gz
         sha256: 965c05409c0fb534b8092eb66a54bafd4cb1a2e50f15cf197f6527ae14747634
       - type: patch
-        path: appdata.patch
-      - type: file
-        path: nitrokey-app-64x64.png
+        paths:
+          - fix-build-error.patch
+          - appdata.patch
 
